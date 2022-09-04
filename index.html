@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="icon" type="image/png" href="favicon.ico">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Bioshock Matching Game </title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        
+        <div id="background"></div>
+        
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        <div class="card"> <img class="card-image" draggable="false" /> </div>
+        
+        <audio src="assets/cohen_is_lurking.mp3" loop ></audio>
+        <div id="sound-modal">
+            <img id="lp" src="assets/vinyl.jpg" />
+            <h3>?</h3>
+            <button id="button-yes" onclick="onClickYesToMusic()">Y</button>
+            <button id="button-no" onclick="onClickNoToMusic()">N</button>
+        </div>
+        
+        <button id="reset-button" onclick="reset()"></button>
+        
+        <script>
+            const IMAGES = [
+                "assets/incinerate.jpg",
+                "assets/winter_blast.jpg",
+                "assets/electrobolt.jpg",
+                "assets/telekinesis.jpg",
+                "assets/insects_warm.jpg",
+                "assets/cyclone_trap.jpg",
+                "assets/enrage.jpg",
+                "assets/be_friend.jpg",
+                "assets/security_bulls_eye.jpg",
+                "assets/target_dummy.jpg"
+            ]
+            const FIRST_ELEMENT = 0
+            const LAST_ELEMENT = IMAGES.length * 2 - 1
+            const EXTRA_TIME_TO_USER_MEMORIZE_MS = 750
+            const FLIP_TIME_MS = 250
+            const PAIR_FOUND_TIME_MS = 500
+            const ANIMATION_PAIR_FOUND = `${PAIR_FOUND_TIME_MS}ms pairFound ease-in-out`
+            const ANIMATION_FLIP_90DEG = `${FLIP_TIME_MS/2}ms flip90deg linear forwards`
+            const ANIMATION_FLIP_90DEG_REVERSE = `${FLIP_TIME_MS/2}ms flip90deg ease-in forwards reverse`
+            const ANIMATION_FLIP_90DEG_TO_180DEG = `${FLIP_TIME_MS/2}ms flip90degTo180deg ease-in forwards`
+            const ANIMATION_FLIP_90DEG_TO_180DEG_REVERSE = `${FLIP_TIME_MS/2}ms flip90degTo180deg ease-in forwards reverse`
+            const LOAD_AUDIO_TIMEOUT_MS = 60000
+        
+            const cardImageElements = Array.from(document.getElementsByClassName("card-image"))
+            const cardElements = Array.from(document.getElementsByClassName("card"))
+            const resetButtonElement = document.getElementById("reset-button")
+            const backgroundElement = document.getElementById("background")
+        
+            let pairsFound = 0
+            let lastCardClicked
+            let upturnedCards = []
+            let doingAnimation = false
+        
+            const randomizeImagesInCards = () => {
+                let usedElements = []
+                let i = 0
+                for(i === 0; i < 2; i++)IMAGES.forEach(image => {
+                    let choicedElement = Math.floor(Math.random() * LAST_ELEMENT)
+                    while(true){
+                        if(!usedElements.includes(choicedElement)){
+                            usedElements = usedElements.concat(choicedElement)
+                            cardImageElements[choicedElement].src = image
+                            break
+                        }
+                        choicedElement++
+                        if(choicedElement > LAST_ELEMENT) choicedElement = FIRST_ELEMENT
+                    }
+                })
+            }
+        
+            const clearAnimation = (element) => {
+                element.style.animation = 'none'
+                element.offsetHeight
+                element.style.animation = null
+            }
+        
+            const showResetButton = () => {
+                resetButtonElement.style.zIndex = "1"
+                setTimeout(() => {  resetButtonElement.style.opacity = "75%" }, 100)
+            }
+        
+            const hideResetButton = () => {
+                resetButtonElement.style.opacity = "0%"
+                setTimeout(() => {  resetButtonElement.style.zIndex = "-2" }, 600)
+            }
+        
+            const hideCards = () => {
+                cardElements.forEach((card) => {
+                    card.style.transition = "2s"
+                    card.style.opacity = "0%"
+                })
+            }
+        
+            const resetCardElementsTransition = () => {
+                cardElements.forEach(card => {
+                    card.style.transition = "0.2s"
+                })
+            }
+        
+            const showCards = () => new Promise((resolve) => {
+                cardElements.forEach((cardElement) => {
+                    clearAnimation(cardElement)
+                    cardElement.style.transition = "1s"
+                    cardElement.style.opacity = "100%"
+                    cardElement.children[0].style.opacity = "0%"
+                })
+                setTimeout(() => { resolve() }, 1000)
+            })
+        
+            const doAnimationPairFound = (elements) => new Promise((resolve) => {
+                elements.forEach(element => {
+                    clearAnimation(element)
+                    element.style.transform = "rotateY(180deg)"
+                    element.style.animation = ANIMATION_PAIR_FOUND
+                })
+                setTimeout(() => { resolve() }, PAIR_FOUND_TIME_MS/4)
+            })
+        
+            const addBlurBackground = () => { 
+                backgroundElement.style.transition = "1s"
+                backgroundElement.style.filter = "blur(4px)"
+            }
+        
+            const removeBlurBackground = () => {
+                backgroundElement.style.transition = "3s"
+                backgroundElement.style.filter = "blur(0px)"
+            }
+        
+            const turnCardsUnclickable = () => {
+                cardElements.forEach(cardElement => {
+                    cardElement.style.pointerEvents = "none"
+                })
+            }
+            
+            const turnCardsClickable = () => {
+                cardElements.forEach(cardElement => {
+                    cardElement.style.pointerEvents = "unset"
+                })
+            }
+            
+            const checkVictory= () => {
+                if(pairsFound != IMAGES.length)return
+                
+                turnCardsUnclickable()
+                setTimeout(() => { hideCards() }, 500)
+                setTimeout(() => { removeBlurBackground() }, 1000)
+                setTimeout(() => { showResetButton() }, 3500)
+            }
+        
+            const flipAndShowCardImage = (cardElement) => new Promise((resolve) => {
+                clearAnimation(cardElement)
+                cardElement.style.animation = ANIMATION_FLIP_90DEG
+        
+                setTimeout(() => {
+                    clearAnimation(cardElement)
+                    cardElement.children[0].style.opacity = "100%"
+                    cardElement.style.animation = ANIMATION_FLIP_90DEG_TO_180DEG 
+                    setTimeout(() => { resolve() }, FLIP_TIME_MS/2)
+                }, FLIP_TIME_MS/2)
+            })
+        
+            const flipAndHideCardImage = (cardElement) => new Promise((resolve) => {
+                clearAnimation(cardElement)
+                cardElement.style.animation = ANIMATION_FLIP_90DEG_TO_180DEG_REVERSE  
+        
+                setTimeout(() => {
+                    clearAnimation(cardElement)
+                    cardElement.children[0].style.opacity = "0%"
+                    cardElement.style.animation = ANIMATION_FLIP_90DEG_REVERSE
+                    setTimeout(() => { resolve() }, FLIP_TIME_MS/2)
+                }, FLIP_TIME_MS/2)
+            })
+        
+            const onClickCard  = async (cardElement) => {
+                const invalidConditions = [
+                    doingAnimation,
+                    cardElement === lastCardClicked,
+                    upturnedCards.includes(cardElement)
+                ]
+                if(invalidConditions.includes(true)) return
+        
+                doingAnimation = true
+        
+                if(!lastCardClicked) {
+                    lastCardClicked = cardElement
+                    await flipAndShowCardImage(cardElement)
+                    doingAnimation = false
+                    return
+                }
+        
+                const isPairFound = lastCardClicked.children[0].src === cardElement.children[0].src
+                if(isPairFound){
+                    await flipAndShowCardImage(cardElement)
+                    await doAnimationPairFound([cardElement, lastCardClicked])
+                    upturnedCards.push(lastCardClicked, cardElement)
+                    doingAnimation = false
+                    lastCardClicked = null
+                    pairsFound++
+                    checkVictory()
+                    return
+                }
+        
+                await flipAndShowCardImage(cardElement)
+                setTimeout(async () => {
+                    flipAndHideCardImage(lastCardClicked)
+                    await flipAndHideCardImage(cardElement)
+                    doingAnimation = false
+                    lastCardClicked = null
+                }, EXTRA_TIME_TO_USER_MEMORIZE_MS)
+            } 
+        
+            const reset = async () => {
+                pairsFound = 0
+                upturnedCards = []
+                doingAnimation = false
+                turnCardsClickable()
+                randomizeImagesInCards()
+                hideResetButton()
+                addBlurBackground()
+                await showCards()
+                resetCardElementsTransition()
+            }
+        
+            randomizeImagesInCards()
+        
+            cardElements.forEach(cardElement => {
+                cardElement.onclick = () => onClickCard(cardElement)
+            })
+        
+        
+            // ------ SOUND SECTION ------
+            const lpElement = document.getElementById("lp")
+            const buttonYesElement = document.getElementById("button-yes")
+            const buttonNoElement = document.getElementById("button-no")
+            const audioElement = Array.from(document.getElementsByTagName("audio"))[0]
+            const soundModalElement = document.getElementById("sound-modal")
+        
+            let isAudioReady = false
+            let userWantsMusic = false
+            let waitingErrorIntervalId
+        
+            const closeSoundModal = () => {
+                soundModalElement.style.animationPlayState = "running"
+                setTimeout(() => { soundModalElement.style.display = "none" }, 1200)
+            }
+        
+            const setWaitingFeedback = () => {
+                document.body.style.cursor = 'wait'
+                buttonYesElement.style.pointerEvents = "none"
+                buttonNoElement.style.pointerEvents = "none"
+            }
+        
+            const playMusicAndGoToGame = () => {
+                if(waitingErrorIntervalId) clearInterval(waitingErrorIntervalId)
+                lpElement.style.animationPlayState = "running"
+                document.body.style.cursor = 'unset'
+                audioElement.play()
+                closeSoundModal()
+            }
+        
+            const onClickYesToMusic = () => {
+                waitingErrorIntervalId = setInterval(() => {
+                    alert("An unexpected error occurred loading music.")
+                    clearInterval(waitingErrorIntervalId)
+                }, LOAD_AUDIO_TIMEOUT_MS)
+        
+                userWantsMusic = true
+                setWaitingFeedback()
+                if(isAudioReady) playMusicAndGoToGame()
+            }
+        
+            const onClickNoToMusic = () => {
+                if(userWantsMusic) return
+                closeSoundModal()
+            }
+        
+            audioElement.oncanplay = () => {
+                if(userWantsMusic) playMusicAndGoToGame()
+                isAudioReady = true
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,246 @@
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    font-family: verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    max-width: 1920px;
+    margin: auto;
+    background-color: #121111;
+}
+
+#background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("assets/background.jpg");
+    background-position: center;
+    background-size: cover;
+    filter: blur(2px);
+    z-index: -1;
+}
+
+.card {
+    display: flex;
+    border-radius: 100%;
+    max-width: 40px;
+    margin: 3px;
+    cursor: pointer;
+    transition: 0.2s;
+    background-image: url("assets/rapture.png");
+    background-position: center;
+    background-size: 230%;
+    box-shadow: inset 0px 0px 6px 4px black;
+}
+
+.card-image {  
+    width: 100%;
+    opacity: 0%;
+    border-radius: 100%;
+    transform: rotateY(180deg);
+}
+
+#reset-button{
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin: 8%;
+    border: none;
+    outline: none;
+    border-radius: 100%;
+    font-weight: bold;
+    font-size: 110%;
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    transition: 0.5s ease-in-out;
+    box-shadow: 2px 2px 2px 2px #020202, inset 0 0 16px 11px #4c4c61;
+    background-color: transparent;
+    background-image: url("assets/reset_button.png");
+    background-size: cover;
+    opacity: 0%;
+    filter: grayscale(0.6) hue-rotate(200deg);
+    z-index: -2;
+}
+
+#reset-button:hover {
+    box-shadow: 2px 2px 2px 2px #020202, inset 0 0 13px 6px #4c4c61;
+}
+
+#sound-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    font-size: 40px;
+    color: white;
+    overflow: hidden;
+    background-color: rgba(0,0,0, 0.9);
+    animation: 1s disappear ease-in 1 forwards;
+    animation-play-state: paused;
+}
+
+
+#sound-modal > h3 {
+    margin: 0px 20px;
+    font-weight: normal;
+    color: #DCDCDB;
+    font-family: verdana, sans-serif;
+}
+
+#sound-modal button {
+    font-size: 80%;
+    width: 60px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    color: #2A2729;
+    background-color: #858291;
+    cursor: pointer;
+    transition: 0.3s ease-in;
+    box-shadow: 2px 2px 2px #DADADA;
+}
+
+#button-yes {
+     margin-right: 10px;
+}
+
+#button-yes:hover {
+    background-color: #71869c;
+}
+
+#button-no:hover{
+    background-color: #8d6b6b;
+}
+
+#sound-modal > img {
+    height: auto; 
+    max-width: 110px;
+    border-radius: 100%;
+    filter: blur(1px) brightness(1.2) contrast(0.8) grayscale(0.1);
+    animation: 1s spin linear infinite;
+    animation-play-state: paused;
+}
+
+audio { display: none; }
+
+@keyframes disappear {
+    from { opacity: 100%; }
+    to { opacity: 0%; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg);}
+    to { transform: rotate(360deg);}
+}
+
+@keyframes pairFound {
+    from { transform: scale(1) rotateY(180deg); }
+    25% { transform: scale(0.9) rotateY(180deg); }
+    50% { transform: scale(1.0) rotateY(180deg); }
+    75% { transform: scale(0.9) rotateY(180deg); }
+    to { transform: scale(1) rotateY(180deg); }
+}
+
+@keyframes  flip90deg {
+    from { transform: rotateY(0deg); }    
+    to { transform: rotateY(90deg); }
+}
+
+@keyframes  flip90degTo180deg {
+    from { transform: rotateY(90deg); }    
+    to { transform: rotateY(180deg); }
+}
+
+@media (min-height: 400px) and (min-width: 300px){
+    .card { max-width: 60px;}
+}
+
+@media (min-width: 330px) and (min-height: 400px){
+    .card{
+        max-width: 60px;
+        margin: 6px;
+    }
+}
+
+@media (min-width: 300px) and (min-height: 300px){
+    .card{
+        max-width: 60px;
+        margin: 6px;
+    }
+}
+
+@media (min-height: 510px) and (min-width: 517px){
+    .card { 
+        max-width: 80px;
+        margin: 8px;
+    }
+}
+
+@media (min-width: 600px) and (min-height: 400px){
+    .card{
+        max-width: 80px;
+        margin: 6px;
+    }
+}
+
+@media (min-height: 500px) and (min-width: 330px){
+    .card { 
+        max-width: 80px;
+        margin: 8px;
+    }
+}
+
+@media (min-width: 524px) and (min-height: 300px){
+    .card { max-width: 80px; }
+}
+
+@media (min-width: 927px) and (min-height: 400px){
+    .card {
+        max-width: 100px;
+        margin: 8px;
+    }
+}
+@media (min-width: 884px) and (min-height: 300px){
+    .card { max-width: 100px; }
+}
+
+@media (min-width: 1194px) and (min-height:400px){
+    .card { max-width: 110px; }
+}
+
+@media (min-width: 1355px) and (min-height: 300px){
+    .card { max-width: 120px;}
+}
+
+@media (min-height: 610px) and (min-width: 717px){
+    .card { max-width: 130px; }
+}
+
+@media (min-height: 710px) and (min-width: 917px){
+    .card { max-width: 150px; }
+}
+
+@media (min-height: 760px) and (min-width: 967px){
+    .card { max-width: 165px; }
+}
+
+@media (min-height: 760px) and (min-width: 1167px){
+    .card { max-width: 180px; }
+}
+
+@media (min-height: 760px) and (min-width: 1467px){
+    .card { max-width: 200px; } 
+}

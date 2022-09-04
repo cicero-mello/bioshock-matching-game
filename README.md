@@ -1,9 +1,7 @@
 ## Bioshock Matching Game
 
-Hi! this is just a safe place to keep the project assets.
+Hello! This code was originally  made on **CodePen**, if you want to see the results of this mini-project easily, access:
 
-If you want to see the code and the results of this mini-project, access:
-
-[*Matching Game - Bioshock*](https://codepen.io/cicero-mello/pen/WNJNMzE) on **CodePen**
+[*Matching Game - Bioshock*](https://codepen.io/cicero-mello/pen/WNJNMzE)
 
 ![](/assets/screenshot.png "Game screenshot")
