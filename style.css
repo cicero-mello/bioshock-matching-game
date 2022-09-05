@@ -154,12 +154,12 @@ audio { display: none; }
     to { transform: scale(1) rotateY(180deg); }
 }
 
-@keyframes  flip90deg {
+@keyframes flip90deg {
     from { transform: rotateY(0deg); }    
     to { transform: rotateY(90deg); }
 }
 
-@keyframes  flip90degTo180deg {
+@keyframes flip90degTo180deg {
     from { transform: rotateY(90deg); }    
     to { transform: rotateY(180deg); }
 }
